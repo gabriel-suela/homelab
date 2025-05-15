@@ -1,0 +1,33 @@
+crds:
+  enabled: true
+  keep: true
+global:
+  logLevel: 2
+enableCertificateOwnerRef: true
+extraArgs:
+  - --logging-format=json
+startupapicheck:
+  extraArgs:
+    - -v
+    - --logging-format=json
+podDisruptionBudget:
+  enabled: true
+webhook:
+  extraArgs:
+    - --logging-format=json
+  podDisruptionBudget:
+    enabled: true
+cainjector:
+  extraArgs:
+    - --logging-format=json
+  podDisruptionBudget:
+    enabled: true
+prometheus:
+  enabled: false
+resources:
+  requests:
+    cpu: 10m
+    memory: 32Mi
+  limits:
+    cpu: 100m
+    memory: 128Mi
