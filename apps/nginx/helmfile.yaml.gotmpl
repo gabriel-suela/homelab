@@ -1,0 +1,29 @@
+repositories:
+  - name: ingress-nginx
+    url: https://kubernetes.github.io/ingress-nginx
+templates:
+  default-release: &default-release
+    namespace: nginx
+environments:
+  default:
+    values:
+      - kubeContext: admin@homelab
+        releases:
+          ingress-nginx:
+            version: 4.12.2
+            <<: *default-release
+---
+templates:
+  default: &default
+    kubeContext: "{{ .Values.kubeContext }}"
+    version: '{{`{{ .Values | get "releases" | get .Release.Name | get "version" }}`}}'
+    namespace: '{{`{{ .Values | get "releases" | get .Release.Name | get "namespace" }}`}}'
+    values:
+      - ./{{`{{ .Release.Name }}`}}/values.yaml.gotmpl
+    secrets:
+      # - ./{{`{{ .Release.Name }}`}}/secrets.enc.yaml
+      # - ./{{`{{ .Release.Name }}`}}/secrets-{{ .Environment.Name }}.enc.yaml
+releases:
+  - chart: ingress-nginx/ingress-nginx
+    name: ingress-nginx
+    <<: *default

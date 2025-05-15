@@ -1,0 +1,17 @@
+controller:
+  ingressClassResource:
+    name: "{{ .Release.Namespace }}"
+    enabled: true
+    default: true
+  ingressClass: "{{ .Release.Namespace }}"
+  metrics:
+    enabled: false
+    serviceMonitor:
+      enabled: false
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 200m
+      memory: 256Mi
