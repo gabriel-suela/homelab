@@ -1,0 +1,109 @@
+crds:
+  enabled: true
+grafana:
+  adminUser: admin
+  adminPassword: ref+sops://secrets.enc.yaml#admin-password
+  image:
+    repository: grafana/grafana-enterprise
+  enabled: true
+  serviceMonitor:
+    enabled: false
+  sidecar:
+    dashboards:
+      enabled: true
+      searchNamespace: ALL
+      label: grafana_dashboard
+      labelValue: "1"
+    datasources:
+      enabled: true
+      searchNamespace: ALL
+      label: grafana_datasource
+      labelValue: "1"
+    plugins:
+      enabled: true
+      searchNamespace: ALL
+      label: grafana_plugin
+      labelValue: "1"
+  ingress:
+    enabled: false
+    hosts:
+      - &fqdn "{{ .Values.grafana_host }}"
+    paths:
+      - /
+    tls:
+      - hosts:
+          - *fqdn
+        secretName: '{{ .Values.grafana_host | replace "." "-" }}-tls'
+  grafana.ini:
+    feature_toggles:
+      # TODO: accessControlOnCall=false is a workaround https://github.com/grafana/oncall/issues/5100#issuecomment-2451959351
+      accessControlOnCall: false
+    log.console:
+      format: json
+    server:
+      domain: *fqdn
+      # root_url: '%(protocol)s://%(domain)s:%(http_port)s/'
+      root_url: "https://%(domain)s/"
+      serve_from_sub_path: false
+    smtp:
+      enabled: false
+    auth:
+      disable_login_form: false
+    auth.basic:
+      enabled: true
+  podDisruptionBudget:
+    minAvailable: 1
+kubeProxy:
+  enabled: false
+coreDns:
+  service:
+    targetPort: metrics
+prometheus-node-exporter:
+  extraArgs:
+    - --log.level=info
+    - --log.format=json
+kubeScheduler:
+  enabled: false
+defaultRules:
+  rules:
+    kubeSchedulerAlerting: false
+    kubeSchedulerRecording: false
+    kubeControllerManager: false
+    kubeProxy: false
+prometheusOperator:
+  enabled: true
+  logFormat: json
+  kubeletEndpointsEnabled: true
+  kubeletEndpointSliceEnabled: true
+kubeStateMetrics:
+  enabled: true
+kube-state-metrics:
+  metricLabelsAllowlist:
+    - pods=[*]
+  selfMonitor:
+    enabled: true
+prometheus:
+  enabled: true
+  prometheusSpec:
+    retention: 180d
+    ruleSelectorNilUsesHelmValues: false
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+    probeSelectorNilUsesHelmValues: false
+    scrapeConfigSelectorNilUsesHelmValues: true
+    logLevel: info
+    logFormat: json
+  ingress:
+    enabled: true
+    hosts:
+      - prometheus.local
+    paths:
+      - /
+    tls:
+      - hosts:
+          - prometheus.local
+        secretName: prometheus-local-tls
+  podDisruptionBudget:
+    enabled: true
+alertmanager:
+  enabled: false
