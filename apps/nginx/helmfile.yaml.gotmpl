@@ -22,7 +22,6 @@ templates:
       - ./{{`{{ .Release.Name }}`}}/values.yaml.gotmpl
     secrets:
       # - ./{{`{{ .Release.Name }}`}}/secrets.enc.yaml
-      # - ./{{`{{ .Release.Name }}`}}/secrets-{{ .Environment.Name }}.enc.yaml
 releases:
   - chart: ingress-nginx/ingress-nginx
     name: ingress-nginx
