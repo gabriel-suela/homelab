@@ -7,13 +7,13 @@ templates:
   default-release: &default-release
     namespace: monitoring
 environments:
-  local:
+  default:
     values:
-      - kubeContext: kind-icv
+      - kubeContext: admin@homelab
         grafana_host: grafana.local
         releases:
           kube-prometheus-stack:
-            version: 71.1.1
+            version: 72.4.0
             <<: *default-release
 ---
 templates:
@@ -29,6 +29,4 @@ templates:
 releases:
   - chart: prometheus-community/kube-prometheus-stack
     name: kube-prometheus-stack
-    labels:
-      app: grafana
     <<: *default
