@@ -7,7 +7,7 @@ grafana:
     repository: grafana/grafana-enterprise
   enabled: true
   serviceMonitor:
-    enabled: false
+    enabled: true
   sidecar:
     dashboards:
       enabled: true
@@ -25,7 +25,10 @@ grafana:
       label: grafana_plugin
       labelValue: "1"
   ingress:
-    enabled: false
+    annotations:
+      cert-manager.io/cluster-issuer: ca-issuer
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    enabled: true
     hosts:
       - &fqdn "{{ .Values.grafana_host }}"
     paths:
@@ -94,6 +97,9 @@ prometheus:
     logLevel: info
     logFormat: json
   ingress:
+    annotations:
+      cert-manager.io/cluster-issuer: ca-issuer
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
     enabled: true
     hosts:
       - prometheus.local
