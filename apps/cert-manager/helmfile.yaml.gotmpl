@@ -1,6 +1,8 @@
 repositories:
   - name: jetstack
     url: https://charts.jetstack.io
+  - name: adfinis
+    url: https://charts.adfinis.com
 templates:
   default-release: &default-release
     namespace: cert-manager
@@ -11,6 +13,9 @@ environments:
         releases:
           cert-manager:
             version: v1.17.1
+            <<: *default-release
+          cert-manager-issuers:
+            version: 0.2.5
             <<: *default-release
 ---
 templates:
@@ -27,3 +32,8 @@ releases:
   - chart: jetstack/cert-manager
     name: cert-manager
     <<: *default
+  - chart: adfinis/cert-manager-issuers
+    name: cert-manager-issuers
+    <<: *default
+    needs:
+      - cert-manager
